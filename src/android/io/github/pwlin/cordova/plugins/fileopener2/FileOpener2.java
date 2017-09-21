@@ -119,6 +119,12 @@ public class FileOpener2 extends CordovaPlugin {
 				    context.grantUriPermission(packageName, path, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 					}
 				}
+				else if(contentType.equals("application/vnd.android.package-archive")) {
+					intent.setDataAndType(path, contentType);
+					//intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					//Without this, when an apk installed, the open button would not effect
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				}
 				else {
 					intent.setDataAndType(path, contentType);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -129,6 +135,10 @@ public class FileOpener2 extends CordovaPlugin {
 				 */
 				 if(openWithDefault){
 					 cordova.getActivity().startActivity(intent);
+					 //Without this, after apk installed, it will flash out without open button
+					 if(contentType.equals("application/vnd.android.package-archive")) {
+						 android.os.Process.killProcess(android.os.Process.myPid());
+					 }
 				 }
 				 else{
 					 cordova.getActivity().startActivity(Intent.createChooser(intent, "Open File in..."));
